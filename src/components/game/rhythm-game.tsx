@@ -4,7 +4,7 @@
 import { TransitionLink as Link } from "glimm/next";
 import { useEffect, useRef, useState } from "react";
 import "@/lib/legacy-keys";
-import { loadTracks } from "@/lib/storage";
+import { cachedTracks, loadTracks } from "@/lib/storage";
 import { formatTime, type StoredTrack } from "@/lib/types";
 import { DIFFICULTIES, type Difficulty } from "@/lib/rhythm-game/chart";
 import { gradeOf, type Stats } from "@/lib/rhythm-game/judge";
@@ -48,7 +48,7 @@ const fromTrack = (t: StoredTrack): Source => ({ key: t.id, title: t.title, arti
 
 export function RhythmGame() {
   const [initial] = useState(readSettings);
-  const [tracks, setTracks] = useState<StoredTrack[] | null>(null);
+  const [tracks, setTracks] = useState<StoredTrack[] | null>(() => { const all = cachedTracks(); return all && uniqueTracks(all); });
   const [source, setSource] = useState<Source | null>(null);
   const [song, setSong] = useState<Song | null>(null);
   const [charting, setCharting] = useState(false);

@@ -1,8 +1,7 @@
 "use client";
 
-import dynamic from "next/dynamic";
+import { ClientOnly } from "@/components/client-only";
+import { StemsView } from "@/components/stems/stems-view";
 
 // The page reads IndexedDB and the audio hardware on first render, so it is never rendered on the server.
-const StemsView = dynamic(() => import("@/components/stems/stems-view").then(m => m.StemsView), { ssr: false });
-
-export function StemsClient() { return <StemsView />; }
+export function StemsClient() { return <ClientOnly><StemsView /></ClientOnly>; }

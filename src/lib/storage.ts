@@ -58,10 +58,23 @@ function migrateLegacy(): Promise<void> {
   })().catch(() => {});
 }
 
-async function database(): Promise<IDBDatabase> {
-  if (!("indexedDB" in window)) throw new Error("IndexedDB is unavailable");
-  await migrateLegacy();
-  return (await openDb(DB_NAME, VERSION))!;
+/* One connection for the page, opened on first use and kept: opening the database on every read cost each room a round
+   trip before its library could show. It lets go when another tab upgrades or deletes the database, or the browser
+   closes it, and the next query opens a fresh one. */
+let connection: Promise<IDBDatabase> | undefined;
+function database(): Promise<IDBDatabase> {
+  if (!("indexedDB" in window)) return Promise.reject(new Error("IndexedDB is unavailable"));
+  if (connection) return connection;
+  const opened: Promise<IDBDatabase> = (async () => {
+    await migrateLegacy();
+    const db = (await openDb(DB_NAME, VERSION))!;
+    const drop = () => { if (connection === opened) connection = undefined; };
+    db.onversionchange = () => { db.close(); drop(); };
+    db.onclose = drop;
+    return db;
+  })();
+  opened.catch(() => { if (connection === opened) connection = undefined; });
+  return connection = opened;
 }
 async function query<T>(table: "tracks"|"mixes"|"projects", method: "getAll"|"put"|"delete"|"clear", value?: unknown): Promise<T> {
   const db = await database();
@@ -75,12 +88,27 @@ async function query<T>(table: "tracks"|"mixes"|"projects", method: "getAll"|"pu
       req.onsuccess = () => resolve(req.result as T);
       req.onerror = () => reject(req.error);
     });
-  } finally { db.close(); }
+  } catch (error) {
+    // A connection the browser closed under us throws InvalidStateError; drop it so the next query reopens.
+    if (error instanceof DOMException && error.name === "InvalidStateError") connection = undefined;
+    throw error;
+  }
 }
-export const loadTracks = () => query<StoredTrack[]>("tracks","getAll");
-export const saveTrack = (track: StoredTrack) => query<IDBValidKey>("tracks","put",track);
-export const removeTrack = (id: string) => query<void>("tracks","delete",id);
-export const clearTracks = () => query<void>("tracks","clear");
+/* The library as last read or written in this page, so a room can draw it in its first render (the commit glimm's sweep
+   reveals) while loadTracks reads the fresh list behind it. Null until the first read. */
+let lastTracks: StoredTrack[] | null = null;
+export const cachedTracks = () => lastTracks;
+export const loadTracks = async () => (lastTracks = await query<StoredTrack[]>("tracks","getAll"));
+export const saveTrack = async (track: StoredTrack) => {
+  const key = await query<IDBValidKey>("tracks","put",track);
+  if (lastTracks) lastTracks = lastTracks.some(t => t.id === track.id) ? lastTracks.map(t => t.id === track.id ? track : t) : [...lastTracks, track];
+  return key;
+};
+export const removeTrack = async (id: string) => {
+  await query<void>("tracks","delete",id);
+  if (lastTracks) lastTracks = lastTracks.filter(t => t.id !== id);
+};
+export const clearTracks = async () => { await query<void>("tracks","clear"); lastTracks = []; };
 export const loadMixes = () => query<StoredMix[]>("mixes","getAll");
 export const saveMix = (mix: StoredMix) => query<IDBValidKey>("mixes","put",mix);
 export const removeMix = (id: string) => query<void>("mixes","delete",id);

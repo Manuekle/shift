@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&family=JetBrains+Mono:wght@400;500&display=block');
+:root{--erie:#1e1e1d;--panel:#242423;--well:#2a2a28;--line:#363633;--narvik:#e7e7d8;--eagle:#aeac95;--t3:#83816f;--fire:#f09235;--jaffa:#ed762f;--sorbus:#ec6428;--ok:#a9b98a}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1080px;overflow:hidden;background:var(--erie)}
+body{font-family:Inter,sans-serif;color:var(--narvik);-webkit-font-smoothing:antialiased;position:relative}
+.frame{position:absolute;inset:0;padding:84px;display:flex;flex-direction:column}
+.glow{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none}
+.grain{position:absolute;inset:0;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:72px 72px;opacity:.22;-webkit-mask-image:radial-gradient(ellipse at 50% 40%,#000 10%,transparent 72%)}
+.mono{font-family:'JetBrains Mono',monospace;letter-spacing:.04em}
+.top{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2}
+.brand{display:flex;align-items:center;gap:16px;font-weight:600;font-size:30px;letter-spacing:-.02em}
+.brand svg{width:48px;height:48px}
+.tag{font-size:17px;color:var(--eagle);text-transform:uppercase;border:1px solid var(--line);padding:9px 16px;border-radius:999px;background:rgb(36 36 35/.6)}
+.bottom{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;position:relative;z-index:2;font-size:17px;color:var(--t3);text-transform:uppercase}
+.bottom b{color:var(--eagle);font-weight:500}
+h1{font-weight:650;letter-spacing:-.045em;line-height:.95;position:relative;z-index:2}
+.grad{background:linear-gradient(180deg,var(--fire),var(--sorbus));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-size:31px;line-height:1.38;color:var(--eagle);letter-spacing:-.012em;font-weight:400;position:relative;z-index:2}
+.card{background:linear-gradient(180deg,rgb(42 42 40/.9),rgb(36 36 35/.9));border:1px solid var(--line);border-radius:28px;box-shadow:0 40px 80px -30px rgb(0 0 0/.7),inset 0 1px 0 rgb(231 231 216/.06);position:relative;z-index:2}
+.idx{color:var(--t3);font-size:17px;margin-left:6px;font-weight:400}
+.shot{position:absolute;z-index:2;border-radius:24px;overflow:hidden;border:1px solid #3e3e3a;box-shadow:0 60px 120px -30px rgb(0 0 0/.85),0 0 0 8px rgb(42 42 40/.55),0 0 90px -10px rgb(237 118 47/.18)}
+.shot img{display:block;width:100%}
+h1{font-size:100px}
+.sub{font-size:28px;max-width:860px;margin-top:28px}

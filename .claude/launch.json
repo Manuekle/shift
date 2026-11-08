@@ -29,6 +29,18 @@
         "3005"
       ],
       "port": 3005
+    },
+    {
+      "name": "app-prod",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "start",
+        "--",
+        "-p",
+        "3006"
+      ],
+      "port": 3006
     }
   ]
 }

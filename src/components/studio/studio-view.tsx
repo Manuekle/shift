@@ -3,7 +3,7 @@
 // Room links sweep through glimm (next/link handles the click itself, so a document-level interceptor never sees it).
 import { TransitionLink as Link } from "glimm/next";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { loadTracks } from "@/lib/storage";
+import { cachedTracks, loadTracks } from "@/lib/storage";
 import { NOTE_NAMES, SCALES, SCALE_LABELS, autotune, type Scale } from "@/lib/autotune";
 import { peaksOf, type StemPeaks } from "@/lib/stem-peaks";
 import { STUDIO_LANES, audible, clipWindow, encodeWav, joinChunks, stemChannels, takeOffset, timelineLength } from "@/lib/studio";
@@ -105,7 +105,7 @@ function ClipLane({ lane, color, dim, length, grid }: { lane: Lane; color: strin
 }
 
 export function StudioView() {
-  const [tracks, setTracks] = useState<StoredTrack[] | null>(null);
+  const [tracks, setTracks] = useState<StoredTrack[] | null>(cachedTracks);
   const [lanes, setLanes] = useState<Lane[]>(() => Array.from({ length: STUDIO_LANES }, emptyLane));
   const [mute, setMute] = useState<boolean[]>(() => Array(STUDIO_LANES).fill(false));
   const [solo, setSolo] = useState<boolean[]>(() => Array(STUDIO_LANES).fill(false));

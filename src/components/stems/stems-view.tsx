@@ -3,7 +3,7 @@
 // Room links sweep through glimm (next/link handles the click itself, so a document-level interceptor never sees it).
 import { TransitionLink as Link } from "glimm/next";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { loadTracks } from "@/lib/storage";
+import { cachedTracks, loadTracks } from "@/lib/storage";
 import { onDownloaded, onStemsDone, startStemJob, takePendingImports, useStemProgress } from "@/lib/background-jobs";
 import { importToLibrary } from "@/lib/library-import";
 import { stemPeaks, type StemPeaks } from "@/lib/stem-peaks";
@@ -77,7 +77,7 @@ function defaultOffset(a: StoredTrack, b: StoredTrack, ratio: number) {
 }
 
 export function StemsView() {
-  const [tracks, setTracks] = useState<StoredTrack[] | null>(null);
+  const [tracks, setTracks] = useState<StoredTrack[] | null>(cachedTracks);
   const [saved, setSaved] = useState<Saved>(initial);
   const { mode, selected, sync, snap, edge } = saved;
   const patch = (p: Partial<Saved>) => setSaved(s => ({ ...s, ...p }));

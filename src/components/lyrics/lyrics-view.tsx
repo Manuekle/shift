@@ -3,7 +3,7 @@
 // Room links sweep through glimm (next/link handles the click itself, so a document-level interceptor never sees it).
 import { TransitionLink as Link } from "glimm/next";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { loadTracks } from "@/lib/storage";
+import { cachedTracks, loadTracks } from "@/lib/storage";
 import { onLyricsDone, startLyricsJob, useLyricsProgress } from "@/lib/background-jobs";
 import { createDeckGraph, type DeckGraph } from "@/lib/deck-graph";
 import { groupLines, indexAt, shifted, toLrc } from "@/lib/lyrics";
@@ -59,7 +59,7 @@ function unique(all: StoredTrack[]) {
 const fileNameOf = (t: StoredTrack) => `${[t.artist, t.title].filter(Boolean).join(" - ").replace(/[\\/:*?"<>|]/g, "") || "lyrics"}.lrc`;
 
 export function LyricsView() {
-  const [tracks, setTracks] = useState<StoredTrack[] | null>(null);
+  const [tracks, setTracks] = useState<StoredTrack[] | null>(cachedTracks);
   const [selected, setSelected] = useState<string | null>(null);
   const [language, setLanguage] = useState("auto");
   const [available, setAvailable] = useState<boolean | null>(null);
